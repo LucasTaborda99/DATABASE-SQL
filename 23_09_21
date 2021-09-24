@@ -1,0 +1,188 @@
+--create database Db_aula2309
+--use Db_aula2309
+CREATE TABLE fornecedor (
+ ID int PRIMARY KEY,
+ nome varchar(50),
+ data date,
+ cidade varchar(50),
+ bairro varchar(50),
+ fk_veiculo_id int FOREIGN KEY REFERENCES veiculo(id)
+);
+CREATE TABLE produto (
+ nome varchar(50),
+ grupo varchar(20),
+ id int PRIMARY KEY,
+ data date,
+ vlr_unit numeric(12,2)
+);
+CREATE TABLE veiculo (
+ id int PRIMARY KEY,
+ nome varchar(50)
+);
+CREATE TABLE vende (
+ id int PRIMARY KEY,
+ vlr_unit numeric(12,2),
+ qtde int,
+ vlt_total numeric(12,2),
+ data date,
+fk_fornecedor_ID int FOREIGN KEY REFERENCES fornecedor (ID),
+ fk_produto_id int FOREIGN KEY REFERENCES produto (id)
+);
+
+--Inserindo registros nas tabelas
+insert into veiculo values(1,'OMEGA')
+insert into veiculo values(2,'GOL')
+insert into veiculo values(3,'UNO')
+select * from veiculo
+--- inserir registros na tabela produto
+insert into produto values ('MADEIRA','MATERIA PRIMA',11,'20210521',480)
+insert into produto values ('ALUMINIO','MATERIA PRIMA',12,'20210211',957)
+insert into produto values ('PLASTICO','PRODUTO ACABADO',13,'20210408',149)
+select * from produto
+-- inserir registros na tabela fornecedor
+insert into fornecedor values (21,'BOSCH','20210527','CURITIBA','CIC',3)
+insert into fornecedor values (31,'ESTRELA','20210623','SAO PAULO','OSASCO',1)
+insert into fornecedor values (41,'POSITIVO','20211107','CURITIBA','CAPAO RASO',2)
+select * from fornecedor
+-- inserir registros na tabela vende
+insert into vende values(100,45,50,500,'20210625',31,11)
+insert into vende values(101,51,43,958,'20210421',41,12)
+insert into vende values(102,85,98,857,'20210713',21,13)
+select * from vende
+--------------------------
+--listar o conteudo das tabelas de forma individual
+select * from produto
+select * from fornecedor
+select * from veiculo
+select * from vende
+------------------------------
+select pro.nome,fo.nome,ven.qtde from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+and pro.nome like '%U%'
+---lista a qtde de registros---------------------
+select count(*) from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+-----ordena por nome de produto-------------
+select pro.* from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+order by pro.nome
+--------agrupa por mes do produto---------------------
+select month(pro.data) as 'Mês',sum(pro.vlr_unit) as 'Total' from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+group by month(pro.data)
+----------agrupa por ano -------------------
+select year(pro.data) as 'Mês',sum(pro.vlr_unit) as 'Total' from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+group by year(pro.data)
+----------Mostra o nome do produto e qtde multiplicado pelo valor unit da venda-----------------------
+select pro.nome,ven.qtde*ven.vlr_unit as 'Total' from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+---------alteracao do valor total das vendas---------------------------------------
+select *
+--update vende
+--set vlt_total= ven.qtde * ven.vlr_unit
+from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2010)
+-------alteracão de dois campos do produto------------------------
+select *
+--update produto
+--set grupo= 'PRODUTO EM PROCESSO',data = '20200808'
+from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2020)
+AND pro.id = 11
+----listar apenas os 4 campos iniciais da tabela produto----------------------------
+select pro.nome,pro.grupo,pro.id,pro.data
+--update produto
+--set grupo= 'PRODUTO EM PROCESSO',data = '20200808'
+from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2021,2020)
+--------exclusao dos registro da tabela vende---------------------------------------
+--select *
+update produto
+set grupo= 'PRODUTO EM PROCESSO',data = '20200808'
+--delete vende
+from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+and ven.qtde > 10
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
+where year(pro.data) in (2020)
+---------tentaiva de exclusao da tabela veiculo, não deixa por causa da chave estrangeira da tabela
+fornecedor-------
+--update produto
+--set vlr_unit = 100
+--select *
+delete veiculo
+from produto pro
+inner join vende ven
+on pro.id = ven.fk_produto_id
+inner join fornecedor fo
+on fo.ID = ven.fk_fornecedor_ID
+inner join veiculo vei
+on vei.id = fo.fk_veiculo_id
